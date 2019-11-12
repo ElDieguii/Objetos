@@ -1,0 +1,208 @@
+import example.*
+import pociones.*
+
+const diego = new Persona()
+const pipo = new Persona()
+const a = new Persona()
+const b = new Persona()
+const c = new Persona()
+const d = new Persona()
+const e = new Persona()
+const f = new Persona()
+const g = new Persona()
+const h = new Persona()
+const i = new Persona()
+
+const ddl = new DulceDeLeche()
+const grog = new Grog()
+
+const posion1 = new Posion(ingredientes = [ddl])
+const posion2 = new Posion(ingredientes = [grog, ddl])
+
+const army1 = new Ejercito()
+const army2 = new Ejercito()
+
+const legion = new Legion(formacion = new FrontemAllargate())
+
+
+test "si una persona recibe la misma cantidad de resistencia que tiene, en daño. Queda fuera de combate" {
+	diego.resistencia(5)
+	diego.recibirDanio(5)
+	assert.that(diego.estaFueraDeCombate())
+}
+
+test "si una persona toma una posion con ddl y esta fuera de combate, revive y gana fuerza" {
+	diego.resistencia(5)
+	diego.recibirDanio(5)
+	diego.tomarPosionMagica(posion1)
+	assert.equals(2, diego.resistencia())
+}
+
+test "si una persona toma una posion con grog y un ingrediente mas, gana 2 de fuerza + lo que el otro ingrediente le de " {
+	diego.fuerza(5)
+	diego.tomarPosionMagica(posion2)
+	assert.equals(17, diego.fuerza())
+}
+
+test "un ejercito con dos integrantes, en combate, con poder 10, tendra un poder total de 20 " {
+	diego.fuerza(5)
+	diego.resistencia(2)
+	pipo.fuerza(2)
+	pipo.resistencia(5)
+	army1.agregarIntegrante(diego)
+	army1.agregarIntegrante(pipo)
+	assert.equals(20, army1.poder())
+}
+
+test "un ejercito con 3 integrantes, al recibir danio, todos los integrantes reciben danio " {
+	diego.fuerza(2)
+	diego.resistencia(2)
+	pipo.fuerza(2)
+	pipo.resistencia(2)
+	a.fuerza(2)
+	a.resistencia(2)
+	army1.agregarIntegrante(diego)
+	army1.agregarIntegrante(pipo)
+	army1.agregarIntegrante(a)
+	army1.recibirDanio(1)
+	assert.equals(6, army1.poder())
+}
+
+test "un ejercito con 11 integrantes, al recibir danio, solo los 10 mas poderosos reciben danio " {
+	diego.fuerza(1)
+	diego.resistencia(1)
+	pipo.fuerza(2)
+	pipo.resistencia(2)
+	a.fuerza(2)
+	a.resistencia(2)
+	b.fuerza(2)
+	b.resistencia(2)
+	c.fuerza(2)
+	c.resistencia(2)
+	d.fuerza(2)
+	d.resistencia(2)
+	e.fuerza(2)
+	e.resistencia(2)
+	f.fuerza(2)
+	f.resistencia(2)
+	g.fuerza(2)
+	g.resistencia(2)
+	h.fuerza(2)
+	h.resistencia(2)
+	i.fuerza(2)
+	i.resistencia(2)
+	army1.agregarIntegrante(diego)
+	army1.agregarIntegrante(pipo)
+	army1.agregarIntegrante(a)
+	army1.agregarIntegrante(b)
+	army1.agregarIntegrante(c)
+	army1.agregarIntegrante(d)
+	army1.agregarIntegrante(e)
+	army1.agregarIntegrante(f)
+	army1.agregarIntegrante(g)
+	army1.agregarIntegrante(h)
+	army1.agregarIntegrante(i)
+	army1.recibirDanio(2)
+	assert.equals(1, diego.resistencia())
+}
+
+test "un ejercito vacio, no puede enfrentar a otro ejercito " {
+	assert.throwsException({army1.enfrentarEnemigo(diego)})
+}
+
+test "un ejercito con todos sus integrantes fuera de combate (con resistencia 0), no puede enfrentar a otro ejercito " {
+	diego.resistencia(0)
+	pipo.resistencia(0)
+	army1.agregarIntegrante(diego)
+	army1.agregarIntegrante(pipo)
+	assert.throwsException({army1.enfrentarEnemigo(a)})
+}
+
+test "un ejercito con integrantes en combate, al enfrentar a un enemigo. El mas debil se debilita " {
+	diego.resistencia(5)
+	diego.fuerza(1)
+	pipo.resistencia(7)
+	pipo.fuerza(1)
+	a.resistencia(10)
+	a.fuerza(1)
+	army1.agregarIntegrante(diego)
+	army1.agregarIntegrante(pipo)
+	army1.enfrentarEnemigo(a)
+	assert.equals(8, a.resistencia())
+}
+
+test "un ejercito1 con integrantes en combate, al enfrentar a otro ejercito2. El mas debil  se debilita " {
+	diego.resistencia(5)
+	diego.fuerza(1)
+	pipo.resistencia(7)
+	pipo.fuerza(1)
+	
+	a.resistencia(5)
+	a.fuerza(1)
+	b.resistencia(5)
+	b.fuerza(1)
+	
+	army1.agregarIntegrante(diego)
+	army1.agregarIntegrante(pipo)
+	
+	army2.agregarIntegrante(a)
+	army2.agregarIntegrante(b)
+	army1.enfrentarEnemigo(army2)
+	assert.equals(6, army2.poder())
+}
+
+
+test "una legion en formacion frontem allargate, en una batalla contra un ejercito recibe el doble de daño al ser la legion mas debil " {
+	diego.resistencia(3)
+	diego.fuerza(1)
+	pipo.resistencia(3)
+	pipo.fuerza(1)
+	a.resistencia(3)
+	a.fuerza(1)
+	b.resistencia(4)
+	b.fuerza(1)
+	
+	c.resistencia(6)
+	c.fuerza(1)
+	d.resistencia(6)
+	d.fuerza(1)
+	e.resistencia(6)
+	e.fuerza(1)
+	
+	legion.agregarIntegrante(diego)
+	legion.agregarIntegrante(pipo)
+	legion.agregarIntegrante(a)
+	legion.agregarIntegrante(b)
+	
+	army1.agregarIntegrante(c)
+	army1.agregarIntegrante(d)
+	army1.agregarIntegrante(e)
+	
+	legion.enfrentarEnemigo(army1)
+	assert.equals(6.6, legion.poder())
+}
+
+test "si una legion con cualquier formacion menos TORTUGA, recibe tanto daño que queda por debajo del minimo preestablecido. Entonces su formacion cambia a TORTUGA " {
+	diego.resistencia(0)
+	diego.fuerza(1)
+	pipo.resistencia(0)
+	pipo.fuerza(1)
+	a.resistencia(1)
+	a.fuerza(1)
+	b.resistencia(5)
+	b.fuerza(1)
+	
+
+	
+	legion.agregarIntegrante(diego)
+	legion.agregarIntegrante(pipo)
+	legion.agregarIntegrante(a)
+	legion.agregarIntegrante(b)
+
+	legion.recibirDanio(5)
+	assert.equals(new Tortuga(), legion.formacion()) // NO DA TRUE POR QUE SON DOS OBJETOS DISTINTOS, PERO SE CAMBIA A TORTUGA
+}
+
+
+
+
